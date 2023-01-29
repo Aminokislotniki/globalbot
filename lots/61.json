@@ -1,0 +1,24 @@
+{
+               "lot_info": {
+                              "lot_name": "dfdsf",
+                              "description": "sdf",
+                              "start_price": 6,
+                              "user_name_admin": "tima_minski",
+                              "photo": "AgACAgIAAxkBAAIHjGPVotsG9_d3yjNJmSYuHkbOsz7wAAJfxTEbeeepSspyy4NvONU-AQADAgADeAADLQQ",
+                              "actual_price": null
+               },
+               "service_info": {
+                              "start_price": 6,
+                              "min_stavka": 6,
+                              "type_stavka": 9,
+                              "id_admin": 958693574,
+                              "message_id_in_channel": null,
+                              "status": "activ",
+                              "time_create": 1674945244,
+                              "winner_dict": {
+                                             "user_name": null,
+                                             "price_final": null
+                              }
+               },
+               "history_bets": []
+}

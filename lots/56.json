@@ -1,0 +1,24 @@
+{
+               "lot_info": {
+                              "lot_name": "TOM AND GERRY",
+                              "description": "HI",
+                              "start_price": 205,
+                              "user_name_admin": "tima_minski",
+                              "photo": "AgACAgIAAxkBAAIHHGPVlw9RGp6mUY5EDSGLDwn0F3O7AAJfxTEbeeepSspyy4NvONU-AQADAgADeAADLQQ",
+                              "actual_price": null
+               },
+               "service_info": {
+                              "start_price": 205,
+                              "min_stavka": 48,
+                              "type_stavka": 69,
+                              "id_admin": 958693574,
+                              "message_id_in_channel": null,
+                              "status": "activ",
+                              "time_create": 1674942226,
+                              "winner_dict": {
+                                             "user_name": null,
+                                             "price_final": null
+                              }
+               },
+               "history_bets": []
+}

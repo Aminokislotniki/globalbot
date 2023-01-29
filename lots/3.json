@@ -1,0 +1,26 @@
+
+{
+    "lot_info": {
+        "lot_name": "tiger",
+        "photo": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRoiJ6m6tZBcv9FLCkSh7pHAmpRLREJa8SiOw&usqp=CAU",
+        "description": "Описание архивное",
+        "city": "Архив",
+        "delivery terms": "Евпропочтой",
+        "start_price": "2300",
+        "actual_price": "3000"
+    },
+    "service_info": {
+        "start_price": null,
+        "id_admin": null,
+        "status": null,
+        "min_stavka": null,
+        "type_stavka": null,
+        "time_create": null,
+        "winner_dict": {
+            "user_name": null,
+            "price_final": null
+        }
+    },
+    "history_bets": [],
+    "views": []
+}

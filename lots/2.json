@@ -1,0 +1,25 @@
+{
+    "lot_info": {
+        "lot_name": "Non posted",
+        "photo": "https://avatarko.ru/img/kartinka/1/Crazy_Frog.jpg",
+        "description": "non_posted description",
+        "city": "Орша",
+        "delivery terms": "Евпропочтой",
+        "start_price": "2000",
+        "actual_price": "3000"
+    },
+    "service_info": {
+        "start_price": null,
+        "id_admin": null,
+        "status": null,
+        "min_stavka": null,
+        "type_stavka": null,
+        "time_create": null,
+        "winner_dict": {
+            "user_name": null,
+            "price_final": null
+        }
+    },
+    "history_bets": [],
+    "views": []
+}
