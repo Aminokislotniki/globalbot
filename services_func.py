@@ -66,7 +66,7 @@ def id_lot():
 
 def view_card_of_lot(lot_id, bot, chat_id):
     try:
-        f = open("lots/" + str(lot_id) + ".json", "r", encoding="utf-8")
+        f = open("lots/" + lot_id + ".json", "r", encoding="utf-8")
         lot = json.loads(f.read())
         f.close()
         text = f'Название: {lot["lot_info"]["lot_name"]}\n' \
@@ -155,7 +155,7 @@ def add_lots_of_admin(id_user,id_l):
         with open('lots/' + str(id_l) + '.json', encoding='utf-8') as g:
             info = json.load(g)
             info = info['lot_info']['lot_name']
-            data1.append({"lot_id": id_l, "lot_name": info})
+            data1.append({"lot_id": str(id_l), "lot_name": info})
         g.close()
         with open('vocabulary/' + str(id_user) + '.json','w', encoding='utf-8') as f:
             json.dump(data,f,ensure_ascii=False,indent=4,)

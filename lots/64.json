@@ -1,0 +1,24 @@
+{
+               "lot_info": {
+                              "lot_name": "Opel",
+                              "description": "машина мечты любого",
+                              "start_price": 1000,
+                              "user_name_admin": "tima_minski",
+                              "photo": "AgACAgIAAxkBAAIIBmPYPhd8bcpRSvtQbSwNg-7ZVFglAAIcxjEbThzISudVGC7ks5lEAQADAgADeAADLQQ",
+                              "actual_price": null
+               },
+               "service_info": {
+                              "start_price": 1000,
+                              "min_stavka": 1000,
+                              "type_stavka": 1,
+                              "id_admin": 958693574,
+                              "message_id_in_channel": null,
+                              "status": "activ",
+                              "time_create": 1675116063,
+                              "winner_dict": {
+                                             "user_name": null,
+                                             "price_final": null
+                              }
+               },
+               "history_bets": []
+}
