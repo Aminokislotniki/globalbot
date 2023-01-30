@@ -65,15 +65,16 @@ def id_lot():
     return buf["lot_id"]
 
 def view_card_of_lot(lot_id, bot, chat_id):
+    print(lot_id)
     try:
-        f = open("lots/" + lot_id + ".json", "r", encoding="utf-8")
+        f = open("lots/" + str(lot_id) + ".json", "r", encoding="utf-8")
         lot = json.loads(f.read())
         f.close()
         text = f'Название: {lot["lot_info"]["lot_name"]}\n' \
                f'Описание: {lot["lot_info"]["description"]}\n' \
                f'Город: {lot["lot_info"]["city"]}\n' \
-               f'Условия доставки: {lot["lot_info"]["delivery terms"]}\n' \
-               f'Продавец: {lot["lot_info"]["delivery terms"]}\n' \
+               f'Условия доставки: {lot["lot_info"]["delivery_terms"]}\n' \
+               f'Продавец: {lot["lot_info"]["salesman"]}\n' \
                f'Стартовая цена: {lot["lot_info"]["start_price"]}\n' \
                f'Актуальная цена: {lot["lot_info"]["actual_price"]}\n'
         return text, lot

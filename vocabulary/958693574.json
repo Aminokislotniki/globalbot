@@ -8,21 +8,10 @@
             "lot_id": "1",
             "lot_name": "active_lot_name"
         },
+
         {
-            "lot_id": "64",
-            "lot_name": "Opel"
-        },
-        {
-            "lot_id": "65",
-            "lot_name": "Мазда"
-        },
-        {
-            "lot_id": "66",
-            "lot_name": "БМВ"
-        },
-        {
-            "lot_id": "67",
-            "lot_name": "Tom and Jerry"
+            "lot_id": "68",
+            "lot_name": "Ауди"
         }
     ],
     "not_posted_lots": [
