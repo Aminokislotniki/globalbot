@@ -14,7 +14,7 @@ commands_user = ["/change_lot", "/change_description", "/change_price", "/change
 def star_new_lot(message):
     if message.text == "/new_lot":
         lot_init_dict[message.chat.id] = ""
-        text = "Добавления нового лота:\n" "Остановить добавление:  /stop\n\n" "Начнём - напишите  название лота\n\n"
+        text = "Так будет выглядеть опубликованный лот\n Добавления нового лота:\n Остановить добавление: /stop\n\n Начнём - напишите  название лота\n\n"
 
         msg = bot.send_message(message.chat.id, text)
         photo = open(r"E:\программирование\myglobalbot\Снимок экрана 2023-01-28 214100.png", "rb")

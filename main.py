@@ -1,15 +1,14 @@
 import json
 import time
-from datetime import datetime, timedelta
 from variables import bot
 from keyboards import type_of_lots_keyboard, active_lots_keyboard, nonpublic_lots_keyboard, card_view_keyboard, \
-    edit_card_keyboard, arhive_lots_keyboard,stavka_canal, stavka1,stavka
+    edit_card_keyboard, arhive_lots_keyboard,stavka_canal, stavka
 from services_func import fs_serj, dt_serj, check_is_admin, check_is_super_admin, \
-    view_card_of_lot, edit_caption, save_new_caption_lot, post_to_channel_by_id, id_lot
+    view_card_of_lot, edit_caption, save_new_caption_lot, post_to_channel_by_id, id_lot,add_lots_of_admin
 from lot_add import star_new_lot,id_chanel,dict_lot
 from admin_add import create_new_admin_json
 from post_lot import post_lots
-from add_new_card import time_lot,information,stavka_back
+from add_new_card import time_lot,information,stavka_back,stavka_lot,dinamic_stavka,percent_stavka
 
 
 @bot.message_handler(commands=['start'])
@@ -75,6 +74,8 @@ def call(call):
     flag = fs_serj(call.data)
     data = dt_serj(call.data)
     id = call.message.chat.id
+    user_name = call.message.chat.username
+    id_user = call.from_user.id
 
 
     # Флаг для выхода из команды /view_lots
@@ -91,6 +92,7 @@ def call(call):
 
     # Флаг для выброса Активнивных Лотов (parametr "lots")
     if flag =="sa":
+        print(id_user)
         if data[0] =="*":
             page = data.split("*")
             page = int(page[1])
@@ -100,6 +102,7 @@ def call(call):
                 buf_admin_file = json.loads(f.read())
                 f.close()
                 active_lots = buf_admin_file['lots']
+
                 if len(active_lots) > 0:
                     bot.edit_message_text(message_id=call.message.message_id, chat_id=call.message.chat.id, text= "Выберете нужный лот\nстраница - " + str(page+1), reply_markup=active_lots_keyboard(active_lots, page))
                 else:
@@ -223,15 +226,22 @@ def call(call):
         bot.send_photo(id_chanel, dict_lot ["lot_info"]["photo"], caption=post_lots(id_l), reply_markup=stavka_canal(id_l))
         bot.delete_message(call.message.chat.id,call.message.message_id)
         bot.delete_message(call.message.chat.id, call.message.message_id-1)
+        add_lots_of_admin(id_user, id_l)
 
     if flag == "ld":
         bot.answer_callback_query(callback_query_id=call.id)
         bot.send_message(id, " попробуй снова, пришли '/new_lot'")
         dict_lot.clear()
 
-    if flag=="ly":
-        id_l = (call.data)[2:]
-        bot.send_message(id, " Ваша ставка принята", reply_markup=stavka1(id_l))
+    if flag == "ly":
+        data = (call.data)[2:]
+        print(call.data)
+        stavka_lot(id, user_name, id, data)
+
+    if flag == "lf":
+        mas_st=data.split('!')
+        print(mas_st)
+        percent_stavka(mas_st,user_name,id,id)
 
     if flag == "lt":
         data = (call.data)[2:]
@@ -241,13 +251,15 @@ def call(call):
         information(call.id)
 
     if flag == "la":
+        mas_st = data.split('!')
         print(data)
+        print(user_name)
+        dinamic_stavka(mas_st, user_name, id, id)
 
     if flag == "lb":
-        b = datetime.now() + timedelta(minutes=1)
+        print(data)
+        stavka_back(call.id, data)
 
-        print(b)
-        stavka_back(call.id,b)
 
 
 print("Ready")

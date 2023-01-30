@@ -54,7 +54,6 @@ def check_is_super_admin(user_id, bot):
     except:
         print("что-то пошло не так в функции check_is_super_admin")
 
-
 def id_lot():
     f = open("users_statistics.json", "r", encoding="utf-8")
     buf = json.loads(f.read())
@@ -64,7 +63,6 @@ def id_lot():
     with open('users_statistics.json', 'w', encoding='utf-8') as f:
         json.dump(buf, f, ensure_ascii=False, indent=4)
     return buf["lot_id"]
-
 
 def view_card_of_lot(lot_id, bot, chat_id):
     try:
@@ -147,6 +145,21 @@ def post_to_channel_by_id(message,lot_id, bot):
     else:
        msg = bot.send_message("Вы можете либо выйти через /stop\nЛибо подтвердить отправку через /continue")
        bot.register_next_step_handler(msg, post_to_channel_by_id, lot_id, bot)
+
+#функция которая добавляет лот в json админа
+def add_lots_of_admin(id_user,id_l):
+        with open('vocabulary/' + str(id_user) + '.json','r', encoding='utf-8') as f:
+            data = json.load(f)
+            data1 = data['lots']
+        f.close()
+        with open('lots/' + str(id_l) + '.json', encoding='utf-8') as g:
+            info = json.load(g)
+            info = info['lot_info']['lot_name']
+            data1.append({"lot_id": id_l, "lot_name": info})
+        g.close()
+        with open('vocabulary/' + str(id_user) + '.json','w', encoding='utf-8') as f:
+            json.dump(data,f,ensure_ascii=False,indent=4,)
+        f.close()
 
 
 
