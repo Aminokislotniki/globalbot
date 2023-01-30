@@ -216,7 +216,6 @@ def call(call):
         dict_lot["lot_info"].update({ "actual_price": None })
         dict_lot["lot_info"].update({"city": None})
         dict_lot["lot_info"].update({"delivery_terms": None})
-        dict_lot["lot_info"].update({"salesman": None})
         dict_lot["service_info"].update({"message_id_in_channel":None})
         dict_lot["service_info"] .update({"status": "activ"})
         dict_lot["service_info"] .update({"time_create": (int(time.time()))})

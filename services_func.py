@@ -74,7 +74,7 @@ def view_card_of_lot(lot_id, bot, chat_id):
                f'Описание: {lot["lot_info"]["description"]}\n' \
                f'Город: {lot["lot_info"]["city"]}\n' \
                f'Условия доставки: {lot["lot_info"]["delivery_terms"]}\n' \
-               f'Продавец: {lot["lot_info"]["salesman"]}\n' \
+               f'Продавец: {lot["lot_info"]["delivery_terms"]}\n' \
                f'Стартовая цена: {lot["lot_info"]["start_price"]}\n' \
                f'Актуальная цена: {lot["lot_info"]["actual_price"]}\n'
         return text, lot
