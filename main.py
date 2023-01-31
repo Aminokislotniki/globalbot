@@ -212,26 +212,31 @@ def call(call):
             print("lot2" + lot_id)
             alert_before_post = bot.send_message(call.message.chat.id,
                                    "Вы уверены что хотите опубликовать лот?\nЕсли вы не редактировали лот или не сохранили изменений кнопкой 'Сохранить' лот опубликуется без изменений\nДля выхода напишите /stop\nДля продолжение напишете /continue")
-            bot.register_next_step_handler(alert_before_post, post_to_channel_by_id,lot_id, bot)
+            bot.register_next_step_handler(alert_before_post, post_to_channel_by_id,lot_id, bot,id_user)
 
     if flag == "ls":
         bot.answer_callback_query(callback_query_id=call.id)
-        dict_lot["lot_info"].update({ "actual_price": None })
+        dict_lot["lot_info"].update({"actual_price": None})
         dict_lot["lot_info"].update({"city": None})
         dict_lot["lot_info"].update({"delivery_terms": None})
-        dict_lot["service_info"].update({"message_id_in_channel":None})
-        dict_lot["service_info"] .update({"status": "activ"})
-        dict_lot["service_info"] .update({"time_create": (int(time.time()))})
-        dict_lot["service_info"].update({"winner_dict":{"user_name":None, "price_final": None}})
+        dict_lot["service_info"].update({"message_id_in_channel": None})
+        dict_lot["service_info"].update({"status": "activ"})
+        dict_lot["service_info"].update({"time_create": (int(time.time()))})
+        dict_lot["service_info"].update({"winner_dict": {"user_name": None, "price_final": None}})
         dict_lot["history_bets"] = []
         id_l = id_lot()
-        with open('lots/'+str(id_l)+'.json', 'w', encoding='utf-8') as f:
-            json.dump(dict_lot, f, ensure_ascii=False, indent=4)
-
-        bot.send_photo(id_chanel, dict_lot ["lot_info"]["photo"], caption=post_lots(id_l), reply_markup=stavka_canal(id_l))
-        bot.delete_message(call.message.chat.id,call.message.message_id)
-        bot.delete_message(call.message.chat.id, call.message.message_id-1)
+        with open('lots/' + str(id_l) + '.json', 'w', encoding='utf-8') as f:
+            json.dump(dict_lot, f, ensure_ascii=False, indent=15)
+        m = bot.send_photo(id_chanel, dict_lot["lot_info"]["photo"], caption=post_lots(id_l),
+                           reply_markup=stavka_canal(id_l))
+        channe_message_id = m.json["message_id"]
+        dict_lot["service_info"]["channel_message_id"] = channe_message_id
+        with open('lots/' + str(id_l) + '.json', 'w', encoding='utf-8') as f:
+            json.dump(dict_lot, f, ensure_ascii=False, indent=15)
+        bot.delete_message(call.message.chat.id, call.message.message_id)
+        bot.delete_message(call.message.chat.id, call.message.message_id - 1)
         add_lots_of_admin(id_user, id_l)
+
 
     if flag == "ld":
         bot.answer_callback_query(callback_query_id=call.id)

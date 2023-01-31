@@ -1,6 +1,10 @@
 import json
 from keyboards import edit_card_keyboard
 from keyboards import quit_only_keyboard
+from lot_add import id_chanel
+from post_lot import post_lots
+from keyboards import stavka_canal
+
 
 
 def dt_serj(s):
@@ -132,11 +136,9 @@ def save_new_caption_lot(caption, id_lot, admin_id, type_lot, bot, chat_id):
     with open('vocabulary/'+ str(admin_id) + ".json", 'w', encoding='utf-8') as f:
         json.dump(admin, f, ensure_ascii=False, indent=4)
     bot.send_message(chat_id, "Лот " + lot_name_new + " успешно сохранен", reply_markup=quit_only_keyboard)
-from lot_add import id_chanel
-from post_lot import post_lots
-from keyboards import stavka_canal
 
-def post_to_channel_by_id(message,lot_id, bot):
+
+def post_to_channel_by_id(message,lot_id, bot,id_user):
     print(lot_id)
     if message.text == "/stop":
         bot.delete_message(message.chat.id, message.message_id)
@@ -149,13 +151,38 @@ def post_to_channel_by_id(message,lot_id, bot):
         bot.delete_message(message.chat.id, message.message_id - 1)
         bot.delete_message(message.chat.id, message.message_id - 2)
         bot.send_photo(id_chanel, data["lot_info"]["photo"], caption=post_lots(lot_id),
-                       reply_markup=stavka_canal(id_lot()))
+                       reply_markup=stavka_canal(lot_id))
         bot.send_message(message.chat.id, "Лот успешно опубликован")
-
-
+        migrac(id_user,lot_id)
     else:
        msg = bot.send_message("Вы можете либо выйти через /stop\nЛибо подтвердить отправку через /continue")
        bot.register_next_step_handler(msg, post_to_channel_by_id, lot_id, bot)
+
+
+#функция, которая делает миграцию лотов в json админа
+def migrac(id_user,lot_id):
+    with open('vocabulary/' + str(id_user) + '.json', 'r', encoding='utf-8') as f:
+        data = json.load(f)
+        data1 = data['lots']
+    with open('lots/' + str(lot_id) + '.json', encoding='utf-8') as g:
+        info = json.load(g)
+        info = info['lot_info']['lot_name']
+        data1.append({"lot_id": str(lot_id), "lot_name": info})
+    with open('vocabulary/' + str(id_user) + '.json', 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=4, )
+    f.close()
+    with open('vocabulary/' + str(id_user) + '.json', 'r', encoding='utf-8') as f:
+        data = json.load(f)
+        data1 = data['not_posted_lots']
+        for x in range(len(data1)):
+            if data1[x]['lot_id'] == lot_id:
+                del data1[x]
+                break
+    with open('vocabulary/' + str(id_user) + '.json', 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=4, )
+    f.close()
+
+
 
 #функция которая добавляет лот в json админа
 def add_lots_of_admin(id_user,id_l):
