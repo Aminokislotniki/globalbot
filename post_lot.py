@@ -3,6 +3,7 @@ import json
 
 
 def post_lots(id_lot):
+    print("post_lots"+ id_lot)
     f = open('lots/'+str(id_lot)+'.json', 'r', encoding='utf-8')
     dict_lot = json.loads(f.read())
     f.close()

@@ -5,7 +5,7 @@
                               "start_price": 1000,
                               "user_name_admin": "tima_minski",
                               "photo": "AgACAgIAAxkBAAIJ3WPYvyM1qHNPulGO9ueqS4sEv1mzAAIixjEbThzISpDH-37afUxEAQADAgADeAADLQQ",
-                              "actual_price": null,
+                              "actual_price": 2125,
                               "city": null,
                               "delivery_terms": null
                },
@@ -22,5 +22,16 @@
                                              "price_final": null
                               }
                },
-               "history_bets": []
+               "history_bets": [
+                              [
+                                             958693574,
+                                             "tima_minski",
+                                             1000
+                              ],
+                              [
+                                             958693574,
+                                             "tima_minski",
+                                             2125
+                              ]
+               ]
 }

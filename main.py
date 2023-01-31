@@ -4,7 +4,7 @@ from variables import bot
 from keyboards import type_of_lots_keyboard, active_lots_keyboard, nonpublic_lots_keyboard, card_view_keyboard, \
     edit_card_keyboard, arhive_lots_keyboard,stavka_canal, stavka
 from services_func import fs_serj, dt_serj, check_is_admin, check_is_super_admin, \
-    view_card_of_lot, edit_caption, save_new_caption_lot, post_to_channel_by_id, id_lot,add_lots_of_admin
+    view_card_of_lot, edit_caption, save_new_caption_lot, post_to_channel_by_id, id_lot,add_lots_of_admin,add_not_posted_lots_of_admin
 from lot_add import star_new_lot,id_chanel,dict_lot
 from admin_add import create_new_admin_json
 from post_lot import post_lots
@@ -207,10 +207,12 @@ def call(call):
     if flag =="sp":
         if data[0] =="*":
             lot_id = data.split("*")
-            lot_id = data[1]
+            print("lot1" + data)
+            lot_id = data[1:]
+            print("lot2" + lot_id)
             alert_before_post = bot.send_message(call.message.chat.id,
                                    "Вы уверены что хотите опубликовать лот?\nЕсли вы не редактировали лот или не сохранили изменений кнопкой 'Сохранить' лот опубликуется без изменений\nДля выхода напишите /stop\nДля продолжение напишете /continue")
-            bot.register_next_step_handler(alert_before_post, post_to_channel_by_id, lot_id, bot)
+            bot.register_next_step_handler(alert_before_post, post_to_channel_by_id,lot_id, bot)
 
     if flag == "ls":
         bot.answer_callback_query(callback_query_id=call.id)
@@ -224,7 +226,7 @@ def call(call):
         dict_lot["history_bets"] = []
         id_l = id_lot()
         with open('lots/'+str(id_l)+'.json', 'w', encoding='utf-8') as f:
-            json.dump(dict_lot, f, ensure_ascii=False, indent=15)
+            json.dump(dict_lot, f, ensure_ascii=False, indent=4)
 
         bot.send_photo(id_chanel, dict_lot ["lot_info"]["photo"], caption=post_lots(id_l), reply_markup=stavka_canal(id_l))
         bot.delete_message(call.message.chat.id,call.message.message_id)
@@ -262,6 +264,25 @@ def call(call):
     if flag == "lb":
         print(data)
         stavka_back(call.id, data)
+
+    if flag == "lo":
+        bot.answer_callback_query(callback_query_id=call.id)
+        dict_lot["lot_info"].update({"actual_price": None})
+        dict_lot["lot_info"].update({"city": None})
+        dict_lot["lot_info"].update({"delivery_terms": None})
+        dict_lot["service_info"].update({"message_id_in_channel": None})
+        dict_lot["service_info"].update({"status": "activ"})
+        dict_lot["service_info"].update({"time_create": (int(time.time()))})
+        dict_lot["service_info"].update({"winner_dict": {"user_name": None, "price_final": None}})
+        dict_lot["history_bets"] = []
+        id_l = id_lot()
+        with open('lots/' + str(id_l) + '.json', 'w', encoding='utf-8') as f:
+            json.dump(dict_lot, f, ensure_ascii=False, indent=4)
+        add_not_posted_lots_of_admin(id_user, id_l)
+        bot.delete_message(call.message.chat.id, call.message.message_id - 1)
+        bot.delete_message(call.message.message_id, call.message.message_id - 2)
+
+
 
 
 

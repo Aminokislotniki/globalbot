@@ -132,17 +132,27 @@ def save_new_caption_lot(caption, id_lot, admin_id, type_lot, bot, chat_id):
     with open('vocabulary/'+ str(admin_id) + ".json", 'w', encoding='utf-8') as f:
         json.dump(admin, f, ensure_ascii=False, indent=4)
     bot.send_message(chat_id, "Лот " + lot_name_new + " успешно сохранен", reply_markup=quit_only_keyboard)
+from lot_add import id_chanel
+from post_lot import post_lots
+from keyboards import stavka_canal
 
 def post_to_channel_by_id(message,lot_id, bot):
+    print(lot_id)
     if message.text == "/stop":
         bot.delete_message(message.chat.id, message.message_id)
         bot.delete_message(message.chat.id, message.message_id -1)
         bot.send_message(message.chat.id, "Вы вышли из отправки в канал, но вы можете продолжить редактировать лот", reply_markup=quit_only_keyboard)
     elif message.text == "/continue":
+        with open('lots/' + str(lot_id) + '.json', 'r', encoding='utf-8') as f:
+            data = json.load(f)
         bot.delete_message(message.chat.id, message.message_id)
         bot.delete_message(message.chat.id, message.message_id - 1)
         bot.delete_message(message.chat.id, message.message_id - 2)
-        bot.send_message(message.chat.id, "Тут должна быть функция отправки в бот")
+        bot.send_photo(id_chanel, data["lot_info"]["photo"], caption=post_lots(lot_id),
+                       reply_markup=stavka_canal(id_lot()))
+        bot.send_message(message.chat.id, "Лот успешно опубликован")
+
+
     else:
        msg = bot.send_message("Вы можете либо выйти через /stop\nЛибо подтвердить отправку через /continue")
        bot.register_next_step_handler(msg, post_to_channel_by_id, lot_id, bot)
@@ -163,4 +173,22 @@ def add_lots_of_admin(id_user,id_l):
         f.close()
 
 
+def add_not_posted_lots_of_admin(id_user, id_l):
+    with open('vocabulary/' + str(id_user) + '.json', 'r', encoding='utf-8') as f:
+        data = json.load(f)
+        data1 = data['not_posted_lots']
+    f.close()
+    with open('lots/' + str(id_l) + '.json', encoding='utf-8') as g:
+        info = json.load(g)
+        info = info['lot_info']['lot_name']
+        data1.append({"lot_id": str(id_l), "lot_name": info})
+    g.close()
+    with open('vocabulary/' + str(id_user) + '.json', 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=4, )
+    f.close()
 
+def public_lot(id_lot):
+    print("public" + id_lot)
+    with open('lots/' + str(id_lot) + '.json', 'r', encoding='utf-8') as f:
+        data = json.load(f)
+        print(data)

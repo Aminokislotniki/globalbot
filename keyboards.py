@@ -169,8 +169,9 @@ def stavka_canal(id_l):
 def keyboard_lot_bot():
     keyboard_lot_bot = InlineKeyboardMarkup()
     button_1 = (InlineKeyboardButton("Опубликовать", callback_data="ls"))
+    button_3 = (InlineKeyboardButton("Сохранить", callback_data="lo"))
     button_2 = (InlineKeyboardButton("Удалить", callback_data="ld"))
-    keyboard_lot_bot.add(button_1, button_2)
+    keyboard_lot_bot.add(button_1, button_3, button_2)
     return keyboard_lot_bot
 
 def card_view_keyboard(id_lot, type):
