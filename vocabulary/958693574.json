@@ -14,7 +14,11 @@
         },
         {
             "lot_id": "69",
-            "lot_name": "BMW X20"
+            "lot_name": "bmv 40"
+        },
+        {
+            "lot_id": "70",
+            "lot_name": "Daf"
         }
     ],
     "not_posted_lots": [
