@@ -1,0 +1,27 @@
+{
+               "lot_info": {
+                              "lot_name": "пппа",
+                              "description": "апа",
+                              "start_price": 5,
+                              "user_name_admin": "tima_minski",
+                              "photo": "AgACAgIAAxkBAAIK-GPY4ioM3LJWo6ai08gskxUjBOfrAAIgxzEbThzISuExDAV3lO9OAQADAgADeAADLQQ",
+                              "actual_price": null,
+                              "city": null,
+                              "delivery_terms": null
+               },
+               "service_info": {
+                              "start_price": 5,
+                              "min_stavka": 5,
+                              "type_stavka": 1,
+                              "id_admin": 958693574,
+                              "message_id_in_channel": null,
+                              "status": "activ",
+                              "time_create": 1675158061,
+                              "winner_dict": {
+                                             "user_name": null,
+                                             "price_final": null
+                              },
+                              "channel_message_id": 36
+               },
+               "history_bets": []
+}

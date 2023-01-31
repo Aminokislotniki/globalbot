@@ -1,11 +1,11 @@
 import json
 import time
-from variables import bot
+from variables import bot,id_chanel
 from keyboards import type_of_lots_keyboard, active_lots_keyboard, nonpublic_lots_keyboard, card_view_keyboard, \
     edit_card_keyboard, arhive_lots_keyboard,stavka_canal, stavka
 from services_func import fs_serj, dt_serj, check_is_admin, check_is_super_admin, \
-    view_card_of_lot, edit_caption, save_new_caption_lot, post_to_channel_by_id, id_lot,add_lots_of_admin,add_not_posted_lots_of_admin
-from lot_add import star_new_lot,id_chanel,dict_lot
+    view_card_of_lot, edit_caption, save_new_caption_lot, post_to_channel_by_id, id_lot,add_lots_of_admin,add_not_posted_lots_of_admin,edit_card_in_channel
+from lot_add import star_new_lot,dict_lot
 from admin_add import create_new_admin_json
 from post_lot import post_lots
 from add_new_card import time_lot,information,stavka_back,stavka_lot,dinamic_stavka,percent_stavka
@@ -193,9 +193,9 @@ def call(call):
             msg = bot.send_message(call.message.chat.id,"Для измениния поля - " + edit_part + ", отправьте сообщение в чат \nДля выхода напишите /stop")
             bot.register_next_step_handler(msg, edit_caption, bot, call, edit_part, lot_id, type_lot)
 
-    if flag =="sw":
+    if flag == "sw":
         print(data)
-        if data[0] =="*":
+        if data[0] == "*":
             types = dict({"a": "lots", "n": "not_posted_lots", "r": "arhive"})
             temp = data.split(":")
             lot_id = temp[1]
@@ -203,6 +203,8 @@ def call(call):
             type_lot = types[type_lot]
             caption = call.message.caption
             save_new_caption_lot(caption, lot_id, call.message.chat.id, type_lot, bot, call.message.chat.id)
+            if type_lot == "lots":
+                edit_card_in_channel(lot_id, bot, id_chanel)
 
     if flag =="sp":
         if data[0] =="*":
@@ -236,27 +238,36 @@ def call(call):
         bot.delete_message(call.message.chat.id, call.message.message_id)
         bot.delete_message(call.message.chat.id, call.message.message_id - 1)
         add_lots_of_admin(id_user, id_l)
-
-
+        bot.send_photo(id, dict_lot["lot_info"]["photo"],
+                       caption="лот опубликован. Переходи в канал :" + id_chanel + "\n"
+                               "для создания нового лота пришли '/new_lot'")
+    # сборка лота
     if flag == "ld":
         bot.answer_callback_query(callback_query_id=call.id)
         bot.send_message(id, " попробуй снова, пришли '/new_lot'")
         dict_lot.clear()
 
+    # ставка
     if flag == "ly":
         data = (call.data)[2:]
         print(call.data)
         stavka_lot(id, user_name, id, data)
+        bot.delete_message(call.message.chat.id, call.message.message_id - 1)
+        bot.delete_message(call.message.chat.id, call.message.message_id)
 
+    # время
     if flag == "lf":
         mas_st=data.split('!')
         print(mas_st)
         percent_stavka(mas_st,user_name,id,id)
+        bot.delete_message(call.message.chat.id, call.message.message_id)
 
+    # информация
     if flag == "lt":
         data = (call.data)[2:]
         time_lot(call.id,data)
 
+    # автоставка
     if flag == "li":
         information(call.id)
 
@@ -265,7 +276,9 @@ def call(call):
         print(data)
         print(user_name)
         dinamic_stavka(mas_st, user_name, id, id)
+        bot.delete_message(call.message.chat.id, call.message.message_id)
 
+    # для отмены ставки
     if flag == "lb":
         print(data)
         stavka_back(call.id, data)
@@ -280,12 +293,13 @@ def call(call):
         dict_lot["service_info"].update({"time_create": (int(time.time()))})
         dict_lot["service_info"].update({"winner_dict": {"user_name": None, "price_final": None}})
         dict_lot["history_bets"] = []
+        dict_lot["service_info"]['channel_message_id'] = None
         id_l = id_lot()
         with open('lots/' + str(id_l) + '.json', 'w', encoding='utf-8') as f:
             json.dump(dict_lot, f, ensure_ascii=False, indent=4)
         add_not_posted_lots_of_admin(id_user, id_l)
         bot.delete_message(call.message.chat.id, call.message.message_id - 1)
-        bot.delete_message(call.message.message_id, call.message.message_id - 2)
+        bot.delete_message(call.message.chat.id, call.message.message_id)
 
 
 

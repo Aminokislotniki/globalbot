@@ -1,9 +1,7 @@
-from variables import bot
+from variables import bot,id_chanel
 import json
 from keyboards import keyboard_lot_bot
 
-
-id_chanel = "@bot_final_auk"
 lot_init_dict={}
 dict_lot ={}
 id_l=""
@@ -29,6 +27,8 @@ class Lot:
     def __init__(self, lot):
         self.lot = lot
         self.description = None
+        self.city = None
+        self.delivery_terms = None
         self.price = None
         self.min_stavka = None
         self.type_stavka = None
@@ -86,21 +86,65 @@ def description(message):
     elif message.content_type == "text" and message.text.replace(" ", "") != "" and message.text not in commands_user:
         lot_init_dict[message.chat.id].description = message.text
         dict_lot["lot_info"].update({"description":message.text})
-        print(dict_lot)
+        bot.send_message(message.chat.id, lot_obj_lot(lot_init_dict[message.chat.id]))
+        bot.delete_message(message.chat.id, message.message_id)
+        bot.delete_message(message.chat.id, message.message_id - 1)
+        bot.delete_message(message.chat.id, message.message_id - 2)
+        msg = bot.send_message(message.chat.id, "Теперь пришли локацию, где находиться лот")
+        bot.register_next_step_handler(msg, city)
+
+    else:
+        msg = bot.send_message(message.chat.id,
+                               "Ты неверно написал, напиши снова или\nДля выхода пришли '/stop'\nДля обновления карточки пришли '/new_lot'")
+        bot.register_next_step_handler(msg, description)
+
+def city(message):
+    if message.text == "/new_lot":
+        msg = bot.send_message(message.chat.id, "Начнём с начала. Пришли название лота")
+        bot.register_next_step_handler(msg, lot)
+
+    elif message.text == "/stop":
+        bot.send_message(message.chat.id, "Вы вышли из добaвления лота")
+
+    elif message.content_type == "text" and message.text.replace(" ", "") != "":
+        lot_init_dict[message.chat.id].city = message.text
+        dict_lot["lot_info"].update({"city":message.text})
+
+        bot.send_message(message.chat.id, lot_obj_lot(lot_init_dict[message.chat.id]))
+        bot.delete_message(message.chat.id, message.message_id)
+        bot.delete_message(message.chat.id, message.message_id-1)
+        bot.delete_message(message.chat.id, message.message_id-2)
+        msg = bot.send_message(message.chat.id, "Опиши условия доставки")
+        bot.register_next_step_handler(msg, delivery_terms)
+
+    else:
+        msg = bot.send_message(message.chat.id,
+                           "Ты неверно написал, напиши снова или\nДля выхода пришли '/stop'\nДля обновления карточки пришли '/new_lot'")
+        bot.register_next_step_handler(msg, city)
+
+def delivery_terms(message):
+    if message.text == "/new_lot":
+        msg = bot.send_message(message.chat.id, "Начнём с начала. Пришли название лота")
+        bot.register_next_step_handler(msg, lot)
+
+    elif message.text == "/stop":
+        bot.send_message(message.chat.id, "Вы вышли из добaвления лота")
+
+    elif message.content_type == "text" and message.text.replace(" ", "") != "":
+        lot_init_dict[message.chat.id].delivery_terms = message.text
+        dict_lot["lot_info"].update({"delivery terms":message.text})
         bot.send_message(message.chat.id, lot_obj_lot(lot_init_dict[message.chat.id]))
         bot.delete_message(message.chat.id, message.message_id)
         bot.delete_message(message.chat.id, message.message_id - 1)
         bot.delete_message(message.chat.id, message.message_id - 2)
 
-
-        msg = bot.send_message(message.chat.id, "Теперь отправьте цену лота \n/change_description для редактирования описания лота, \nОстановить добавление:  /stop")
+        msg = bot.send_message(message.chat.id,
+                               "Теперь отправьте цену лота \n/change_description для редактирования описания лота, \nОстановить добавление:  /stop")
         bot.register_next_step_handler(msg, price)
     else:
         msg = bot.send_message(message.chat.id,
-                           "что-то пошло не так, попробуй снова\nДля выхода пришли '/stop'\nДля обновления карточки пришли '/new_lot'")
-        bot.register_next_step_handler(msg, description)
-
-
+                               "что-то пошло не так, попробуй снова\nДля выхода пришли '/stop'\nДля обновления карточки пришли '/new_lot'")
+        bot.register_next_step_handler(msg, delivery_terms)
 def price(message):
     if message.text == "/new_lot":
         msg = bot.send_message(message.chat.id, "Начнём с начала. Пришли название лота")
