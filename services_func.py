@@ -104,12 +104,6 @@ def edit_caption(message,bot, call, edit_part, id_lot, type_lot):
 
 
 def save_new_caption_lot(caption, id_lot, admin_id, type_lot, bot, chat_id):
-    print(caption)
-    print(id_lot)
-    print(admin_id)
-    print(type_lot)
-    print(bot)
-    print(chat_id)
     names = ["Название", "Описание", "Город", "Условия доставки", "Стартовая цена"]
     keys = ["lot_name", "description", "city", "delivery terms", "start_price"]
     caption = caption.split("\n")

@@ -6,11 +6,15 @@
     "lots": [
         {
             "lot_id": "1",
-            "lot_name": "lkjhgfd"
+            "lot_name": "Good"
         },
         {
             "lot_id": "68",
             "lot_name": "Ауди"
+        },
+        {
+            "lot_id": "69",
+            "lot_name": "BMW X20"
         }
     ],
     "not_posted_lots": [

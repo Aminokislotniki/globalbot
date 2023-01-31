@@ -194,7 +194,7 @@ def call(call):
             bot.register_next_step_handler(msg, edit_caption, bot, call, edit_part, lot_id, type_lot)
 
     if flag =="sw":
-
+        print(data)
         if data[0] =="*":
             types = dict({"a": "lots", "n": "not_posted_lots", "r": "arhive"})
             temp = data.split(":")
