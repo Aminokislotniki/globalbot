@@ -185,10 +185,11 @@ def card_view_keyboard(id_lot, type):
     return keyboard
 
 def edit_card_keyboard(id_lot, type_lot):
-    print("edit_card_keyboard", type_lot)
+    print("edit_card_keyboard", type_lot,id_lot)
     keyboard = InlineKeyboardMarkup(row_width=2)
-    names = ["Название","Описание", "Город", "Условия доставки", "Стартовая цена"]
-    button_list = [InlineKeyboardButton(text=x, callback_data="se:" + type_lot + "*" + str(id_lot) + "?" + x) for x in names]
+    names = ["Название", "Описание", "Город", "Условия доставки", "Стартовая цена"]
+    button_list = [InlineKeyboardButton(text=x, callback_data="se:"+str(type_lot)+"*"+str(id_lot)+"?"+x)
+                   for x in names]
     save_button = InlineKeyboardButton(text="Сохранить", callback_data="sw*" + type_lot + ":" + str(id_lot))
     button_public_in_channel = (InlineKeyboardButton("Опубликовать", callback_data="sp*" + str(id_lot)))
     exitbutton = InlineKeyboardButton(text="Выход", callback_data="sq")

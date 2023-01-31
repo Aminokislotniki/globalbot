@@ -180,7 +180,7 @@ def call(call):
             id_lot_is = data.split(":")
             id_lot_is = id_lot_is[1]
             print(type_lot, id_lot_is)
-            bot.edit_message_reply_markup(call.message.chat.id,call.message.message_id, reply_markup=edit_card_keyboard(id_lot, type_lot))
+            bot.edit_message_reply_markup(call.message.chat.id,call.message.message_id, reply_markup=edit_card_keyboard(id_lot_is, type_lot))
 
         if data[0] == ":":
             type_lot = data[1]
@@ -194,6 +194,7 @@ def call(call):
             bot.register_next_step_handler(msg, edit_caption, bot, call, edit_part, lot_id, type_lot)
 
     if flag =="sw":
+
         if data[0] =="*":
             types = dict({"a": "lots", "n": "not_posted_lots", "r": "arhive"})
             temp = data.split(":")
