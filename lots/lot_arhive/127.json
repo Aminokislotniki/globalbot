@@ -1,42 +1,42 @@
 {
                "lot_info": {
-                              "lot_name": "bmw",
-                              "description": "авто для того, кому нечего доказывать",
-                              "city": "минск",
-                              "delivery terms": "Авиа",
-                              "start_price": 5000,
+                              "lot_name": "Dfghj",
+                              "description": "Oiuyt",
+                              "city": ",mnbvc",
+                              "delivery terms": "200",
+                              "start_price": 20,
                               "user_name_admin": "tima_minski",
-                              "photo": "AgACAgIAAxkBAAIQo2PbBzmQynKSC33XfWxT2y7-_pshAAI1xjEbUpfYSpb7Xcr-SbizAQADAgADeAADLgQ",
+                              "photo": "AgACAgIAAxkBAAISIGPbTBG-V7cnoVLotjUxsIX1iLAqAAI1xjEbUpfYSpb7Xcr-SbizAQADAgADeAADLgQ",
                               "delivery_terms": null,
-                              "actual_price": 5000
+                              "actual_price": 20
                },
                "service_info": {
-                              "start_price": 5000,
-                              "min_stavka": 10,
+                              "start_price": 20,
+                              "min_stavka": 1,
                               "type_stavka": 1,
                               "id_admin": 958693574,
                               "message_id_in_channel": null,
                               "status": "activ",
-                              "time_create": 1675305471,
+                              "time_create": 1675316242,
                               "winner_dict": {
                                              "user_name": "tima_minski",
-                                             "price_final": 5000
+                                             "price_final": 20
                               },
-                              "channel_message_id": 74
+                              "channel_message_id": 87
                },
                "history_bets": [
                               [
                                              958693574,
                                              "tima_minski",
-                                             5000,
-                                             1675298749
+                                             20,
+                                             1675316248
                               ]
                ],
                "winner": {
                               "gold": {
                                              "id_user": 958693574,
                                              "name_user": "tima_minski",
-                                             "price": 5000
+                                             "price": 20
                               }
                }
 }

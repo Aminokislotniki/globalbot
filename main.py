@@ -81,12 +81,14 @@ def view_lots(message):
 
 @bot.callback_query_handler(func=lambda call: True)
 def call(call):
+
     print(call.data + " from " + call.from_user.username)
     flag = fs_serj(call.data)
     data = dt_serj(call.data)
     id = call.message.chat.id
     user_name = call.message.chat.username
     id_user = call.from_user.id
+
 
 
     if flag == "sc":
@@ -294,7 +296,9 @@ def call(call):
     # время
     if flag == "lt":
         data = (call.data)[2:]
-        time_lot(call.id,data)
+        # time_lot(call.id,data)
+        time_is_over_lot(data, id_chanel, id_user, id,call.id)
+        print("id"+str(id))
 
     # автоставка
     if flag == "li":

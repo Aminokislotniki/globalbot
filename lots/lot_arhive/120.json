@@ -1,0 +1,29 @@
+{
+               "lot_info": {
+                              "lot_name": "Мазда",
+                              "description": "Авто",
+                              "city": "Киев",
+                              "delivery terms": "Никак",
+                              "start_price": 3000,
+                              "user_name_admin": "tima_minski",
+                              "photo": "AgACAgIAAxkBAAIRRWPbM4Q-EnQpH2qUCZDdGAABUJ5ACwACtcExG-M62ErzCdCUaNYYjwEAAwIAA3gAAy4E",
+                              "delivery_terms": null,
+                              "actual_price": "3000"
+               },
+               "service_info": {
+                              "start_price": 3000,
+                              "min_stavka": 10,
+                              "type_stavka": 2,
+                              "id_admin": 958693574,
+                              "message_id_in_channel": null,
+                              "status": "activ",
+                              "time_create": 1675309957,
+                              "winner_dict": {
+                                             "user_name": null,
+                                             "price_final": null
+                              },
+                              "channel_message_id": 79
+               },
+               "history_bets": [],
+               "winner": {}
+}

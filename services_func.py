@@ -109,10 +109,19 @@ def view_card_of_lot(lot_id, bot, chat_id):
                f'<b>Актуальная цена: </b>{lot["lot_info"]["actual_price"]}\n'
         return text, lot
 
-
     except:
-        bot.send_message(chat_id, "Какая-то хрень, но файл с ID - " + str(lot_id) + " не найден :(")
-        return 0, 0
+        f = open("lots/lot_arhive/" + str(lot_id) + ".json", "r", encoding="utf-8")
+        lot = json.loads(f.read())
+        f.close()
+        text = f'<b>Название: </b>{lot["lot_info"]["lot_name"]}\n' \
+               f'<b>Описание: </b>{lot["lot_info"]["description"]}\n' \
+               f'<b>Город: </b>{lot["lot_info"]["city"]}\n' \
+               f'<b>Условия доставки: </b>{lot["lot_info"]["delivery terms"]}\n' \
+               f'<b>Продавец: </b>{lot["lot_info"]["user_name_admin"]}\n' \
+               f'<b>Стартовая цена: </b>{lot["lot_info"]["start_price"]}\n' \
+               f'<b>Актуальная цена: </b>{lot["lot_info"]["actual_price"]}\n'
+        return text, lot
+
 
 def edit_caption(message,bot, call, edit_part, id_lot, type_lot):
     if message.text == "/stop":
