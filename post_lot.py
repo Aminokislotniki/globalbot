@@ -6,6 +6,7 @@ def post_lots(id_lot):
 
     f = open('lots/'+str(id_lot)+'.json', 'r', encoding='utf-8')
     dict_lot = json.loads(f.read())
+    print(dict_lot)
     f.close()
     buf=''
     photo=""
@@ -15,11 +16,17 @@ def post_lots(id_lot):
     for z in dict_lot:
         for x in dict_lot[z]:
             if x=='lot_name':
-                buf+=(dict_lot[z][x])+"\n"
+                buf+='<b>Название: </b>' +str(dict_lot[z][x]).capitalize()+"\n"
             if x=="description":
-                buf+=(dict_lot[z][x])+"\n"
+                buf+='<b>Описание:  </b>'+str(dict_lot[z][x]).capitalize()+"\n"
+            if x=="city":
+                buf+='<b>Город:  </b>'+str(dict_lot[z][x]).capitalize() + "\n"
+            if x=="delivery terms":
+                buf+='<b>Условия доставки:  </b>'+str(dict_lot[z][x]).capitalize() + "\n"
+            if x=="user_name_admin":
+                buf+='<b>Продавец:  </b>' + '@'+str(dict_lot[z][x]) + "\n"
             if x=="start_price" and z=="lot_info":
-                buf+='Цена:'+str(dict_lot[z][x])
+                buf+='<b>Цена:  </b>'+str(dict_lot[z][x])+ "\n"
             if x=="photo":
                 photo=(dict_lot[z][x])
             if x=="min_stavka":
@@ -28,7 +35,7 @@ def post_lots(id_lot):
                 times=dict_lot[z][x]
             if x=="start_price":
                 start_price=dict_lot[z][x]
-    print(photo,min_stavka)
+    print(buf)
     return buf,photo,times,min_stavka,start_price
 
 

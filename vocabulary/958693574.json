@@ -5,56 +5,32 @@
     },
     "lots": [
         {
-            "lot_id": "1",
-            "lot_name": "Good"
+            "lot_id": "104",
+            "lot_name": "bit"
         },
         {
-            "lot_id": "68",
-            "lot_name": "Ауди"
+            "lot_id": "109",
+            "lot_name": "tjhgf"
         },
         {
-            "lot_id": "69",
-            "lot_name": "bmv 40"
+            "lot_id": "113",
+            "lot_name": "gtfre"
         },
         {
-            "lot_id": "70",
-            "lot_name": "Daf"
-        },
-        {
-            "lot_id": "72",
-            "lot_name": "rsgergerg"
-        },
-        {
-            "lot_id": "80",
-            "lot_name": "Guf"
-        },
-        {
-            "lot_id": "82",
-            "lot_name": "red"
-        },
-        {
-            "lot_id": "82",
-            "lot_name": "red"
-        },
-        {
-            "lot_id": "83",
-            "lot_name": "look"
-        },
-        {
-            "lot_id": "81",
-            "lot_name": "basta"
+            "lot_id": "116",
+            "lot_name": "Opel"
         }
     ],
     "not_posted_lots": [
         {
-            "lot_id": "2",
-            "lot_name": "Non posted"
+            "lot_id": "101",
+            "lot_name": "Lego"
         }
     ],
     "arhive": [
         {
-            "lot_id": "3",
-            "lot_name": "tiger"
+            "lot_id": "115",
+            "lot_name": "bmw"
         }
     ]
 }

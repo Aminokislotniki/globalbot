@@ -57,7 +57,7 @@ def lot(message):
         new_lot = Lot(message.text)
         lot_init_dict[message.chat.id] = new_lot
         dict_lot["lot_info"] = {}
-        dict_lot["lot_info"].update({"lot_name": message.text})
+        dict_lot["lot_info"].update({"lot_name": str(message.text).capitalize()})
         bot.send_message(message.chat.id, lot_obj_lot(lot_init_dict[message.chat.id]))
         bot.delete_message(message.chat.id, message.message_id)
         bot.delete_message(message.chat.id, message.message_id - 1)
@@ -85,7 +85,7 @@ def description(message):
         bot.register_next_step_handler(msg, lot)
     elif message.content_type == "text" and message.text.replace(" ", "") != "" and message.text not in commands_user:
         lot_init_dict[message.chat.id].description = message.text
-        dict_lot["lot_info"].update({"description":message.text})
+        dict_lot["lot_info"].update({"description":str(message.text).capitalize()})
         bot.send_message(message.chat.id, lot_obj_lot(lot_init_dict[message.chat.id]))
         bot.delete_message(message.chat.id, message.message_id)
         bot.delete_message(message.chat.id, message.message_id - 1)
@@ -108,8 +108,7 @@ def city(message):
 
     elif message.content_type == "text" and message.text.replace(" ", "") != "":
         lot_init_dict[message.chat.id].city = message.text
-        dict_lot["lot_info"].update({"city":message.text})
-
+        dict_lot["lot_info"].update({"city":str(message.text).capitalize()})
         bot.send_message(message.chat.id, lot_obj_lot(lot_init_dict[message.chat.id]))
         bot.delete_message(message.chat.id, message.message_id)
         bot.delete_message(message.chat.id, message.message_id-1)
@@ -132,7 +131,7 @@ def delivery_terms(message):
 
     elif message.content_type == "text" and message.text.replace(" ", "") != "":
         lot_init_dict[message.chat.id].delivery_terms = message.text
-        dict_lot["lot_info"].update({"delivery terms":message.text})
+        dict_lot["lot_info"].update({"delivery terms":str(message.text).capitalize()})
         bot.send_message(message.chat.id, lot_obj_lot(lot_init_dict[message.chat.id]))
         bot.delete_message(message.chat.id, message.message_id)
         bot.delete_message(message.chat.id, message.message_id - 1)

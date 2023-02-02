@@ -3,11 +3,12 @@ from keyboards import edit_card_keyboard
 from keyboards import quit_only_keyboard,stavka1
 from lot_add import id_chanel
 from post_lot import post_lots
-from keyboards import stavka_canal
+from keyboards import stavka_canal,current_lots_keyboard
 from datetime import datetime, timedelta
-import telebot
+import os
 import time
 from variables import bot
+from variables import active_lots
 
 def dt_serj(s):
     s = s[2:]
@@ -17,6 +18,29 @@ def dt_serj(s):
 def fs_serj(st):
     return(st[0:2])
 
+#функция которая обновляет победителей в канале
+def winner_change_chanel(lot_id, id_chanel):
+    with open('lots/' + str(lot_id) + '.json', 'r', encoding='utf-8') as f:
+        data = json.load(f)
+        lot = data['lot_info']
+        data_winner = data['winner']
+    buf = ''
+    buf += '<b>Название: </b>' + lot['lot_name'] + '\n'
+    buf += '<b>Описание:  </b>' + lot['description'] + '\n'
+    buf += '<b>Город:  </b>' + lot['city'] + '\n'
+    buf += '<b>Условия доставки:  </b>' + lot['delivery terms'] + '\n'
+    buf += '<b>Продавец:  </b>' + '@'+lot['user_name_admin'] + '\n\n'
+    if "gold" in data_winner:
+        buf += '🥇' + str(data_winner['gold']['price']) +' руб ' + ' -  ' + data_winner['gold']['name_user'][0:3] + "***" + '\n'
+    if "silver" in data_winner:
+        buf += '🥈' + str(data_winner['silver']['price']) +' руб ' + ' -  '  + data_winner['silver']['name_user'][0:3] + "***" + '\n'
+    if "bronze" in data_winner:
+        buf += '🥉' + str(data_winner['bronze']['price']) +' руб ' + ' -  '  + data_winner['bronze']['name_user'][0:3] + "***" + '\n'
+    with open('lots/' + str(lot_id) + '.json', 'r', encoding='utf-8') as f:
+        lot = json.load(f)
+        f.close()
+        channel_message_id = lot["service_info"]["channel_message_id"]
+    bot.edit_message_caption(caption=buf, chat_id=id_chanel, message_id=channel_message_id,parse_mode="html",reply_markup=stavka_canal(lot_id))
 
 def check_is_ban(user_id):
     # Возвращает FALSE - если бана нет.
@@ -76,13 +100,13 @@ def view_card_of_lot(lot_id, bot, chat_id):
         f = open("lots/" + str(lot_id) + ".json", "r", encoding="utf-8")
         lot = json.loads(f.read())
         f.close()
-        text = f'Название: {lot["lot_info"]["lot_name"]}\n' \
-               f'Описание: {lot["lot_info"]["description"]}\n' \
-               f'Город: {lot["lot_info"]["city"]}\n' \
-               f'Условия доставки: {lot["lot_info"]["delivery_terms"]}\n' \
-               f'Продавец: {lot["lot_info"]["delivery_terms"]}\n' \
-               f'Стартовая цена: {lot["lot_info"]["start_price"]}\n' \
-               f'Актуальная цена: {lot["lot_info"]["actual_price"]}\n'
+        text = f'<b>Название: </b>{lot["lot_info"]["lot_name"]}\n' \
+               f'<b>Описание: </b>{lot["lot_info"]["description"]}\n' \
+               f'<b>Город: </b>{lot["lot_info"]["city"]}\n' \
+               f'<b>Условия доставки: </b>{lot["lot_info"]["delivery terms"]}\n' \
+               f'<b>Продавец: </b>{lot["lot_info"]["user_name_admin"]}\n' \
+               f'<b>Стартовая цена: </b>{lot["lot_info"]["start_price"]}\n' \
+               f'<b>Актуальная цена: </b>{lot["lot_info"]["actual_price"]}\n'
         return text, lot
 
 
@@ -107,7 +131,6 @@ def edit_caption(message,bot, call, edit_part, id_lot, type_lot):
         bot.edit_message_caption(caption=new_caption, chat_id=call.message.chat.id, message_id=call.message.message_id, reply_markup=edit_card_keyboard(id_lot,type_lot))
         bot.delete_message(message.chat.id, message.message_id-1)
         bot.delete_message(message.chat.id, message.message_id)
-
 
 def save_new_caption_lot(caption, id_lot, admin_id, type_lot, bot, chat_id):
     names = ["Название", "Описание", "Город", "Условия доставки", "Стартовая цена"]
@@ -137,7 +160,7 @@ def save_new_caption_lot(caption, id_lot, admin_id, type_lot, bot, chat_id):
             break
     with open('vocabulary/'+ str(admin_id) + ".json", 'w', encoding='utf-8') as f:
         json.dump(admin, f, ensure_ascii=False, indent=4)
-    bot.send_message(chat_id, "Лот " + lot_name_new + " успешно сохранен", reply_markup=quit_only_keyboard)
+    bot.send_message(chat_id, "Лот " + lot_name_new + " успешно сохранен", reply_markup=quit_only_keyboard,parse_mode="html")
 
 
 def post_to_channel_by_id(message,lot_id, bot,id_user):
@@ -154,7 +177,7 @@ def post_to_channel_by_id(message,lot_id, bot,id_user):
         bot.delete_message(message.chat.id, message.message_id - 2)
 
         n = bot.send_photo(id_chanel, data["lot_info"]["photo"], caption=post_lots(lot_id),
-                       reply_markup=stavka_canal(lot_id))
+                       reply_markup=stavka_canal(lot_id),parse_mode="html")
         channel_message_id = n.json["message_id"]
         with open('lots/' + str(lot_id) + '.json', 'r', encoding='utf-8') as f:
             data1 = json.load(f)
@@ -177,18 +200,25 @@ def stavka_back(call_id,data):
     for z in dict_lot:
         if z=="history_bets":
             mas_bets=dict_lot[z]
+    print(mas_bets)
     for x in mas_bets:
-        print(mas_bets)
-        if (int(time.time())-x[3])<60:
-            bot.send_photo(call_id, dict_lot["lot_info"]["photo"], caption=post_lots(data),
-                            reply_markup=stavka1(data))
-            #bot.delete_message(call.message.chat.id, call.message.message_id)
-
-            #bot.answer_callback_query(call_id, "Ставка отменена успешно", show_alert=False)
-
-            for i in range(len(mas_bets)-1,-1,-1):
+        t = int(time.time())
+        for i in range(len(mas_bets) - 1, -1, -1):
+            if t - x[3] < 60:
+                print(x)
                 del mas_bets[i]
-            print(mas_bets)
+            # if (int(time.time())-x[3])<300:
+
+            # bot.send_photo(call_id, dict_lot["lot_info"]["photo"], caption=dict_lot["lot_info"]["lot_name"]+"\n"+str(dict_lot["lot_info"]["start_price"])+"\n",
+            #                 reply_markup=stavka1(data))
+            # bot.delete_message(call.message.chat.id, call.message.message_id)
+            winner(str(data))
+
+            bot.answer_callback_query(call_id, "Ставка отменена успешно", show_alert=False)
+
+            # for i in range(len(mas_bets)-1,-1,-1):
+            #     print(mas_bets[i])
+            #     del mas_bets[i]
         else:
             bot.answer_callback_query(call_id, "Ставкy отменить невозможно", show_alert=False)
 
@@ -215,7 +245,6 @@ def migrac(id_user,lot_id):
     with open('vocabulary/' + str(id_user) + '.json', 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=4, )
     f.close()
-
 
 
 #функция которая добавляет лот в json админа
@@ -248,33 +277,26 @@ def add_not_posted_lots_of_admin(id_user, id_l):
         json.dump(data, f, ensure_ascii=False, indent=4, )
     f.close()
 
-def public_lot(id_lot):
-    print("public" + id_lot)
-    with open('lots/' + str(id_lot) + '.json', 'r', encoding='utf-8') as f:
-        data = json.load(f)
-        print(data)
-
 
 def edit_card_in_channel(lot_id, bot, channel_id):
-    with open('lots/' + str(lot_id) + '.json', encoding='utf-8') as f:
+    with open('lots/' + str(lot_id) + '.json' , encoding='utf-8') as f:
         lot = json.load(f)
         f.close()
         channel_message_id = lot["service_info"]["channel_message_id"]
 
-        names = ["Название", "Описание", "Город", "Условия доставки", "Актуальная цена"]
-        keys = ["lot_name", "description", "city", "delivery terms", "actual_price"]
+        names = ["Название", "Описание", "Город", "Условия доставки", "Продавец", "Актуальная цена"]
+        keys = ["lot_name", "description", "city", "delivery terms","user_name_admin","actual_price"]
         caption = ""
         for i in range(len(names)):
             if lot["lot_info"][keys[i]] != None:
-                caption +=names[i] + ": " +lot["lot_info"][keys[i]] + "\n"
+                caption +='<b>'+names[i]+'</b>' + ": " +str(lot["lot_info"][keys[i]]) + "\n"
             else:
                 caption += names[i] + ": " + "нет данных" + "\n"
         bot.edit_message_caption(caption=caption, chat_id=channel_id, message_id=channel_message_id,
-                                 reply_markup=stavka_canal(lot_id))
+                                 reply_markup=stavka_canal(lot_id),parse_mode="html")
 
 #ставка при первом нажатии участвовать
 def stavka_lot(call_id,user_name,id,data):
-    #time_stavka = datetime.now() + timedelta(minutes=1)
     time_stavka = (int(time.time()))
     print(time_stavka)
     start_price = ""
@@ -282,22 +304,26 @@ def stavka_lot(call_id,user_name,id,data):
     dict_lot = json.loads(f.read())
     f.close()
     for z in dict_lot:
+        if z=="history_bets":
+            mas_bets=dict_lot[z]
         for x in dict_lot[z]:
             if x == "start_price":
                 start_price = int(dict_lot[z][x])
-    dict_lot["lot_info"]["actual_price"] = start_price
-    dict_lot["history_bets"].append([id,user_name,start_price,time_stavka])
+    if len(mas_bets) == 0:
+        dict_lot["lot_info"]["actual_price"] = start_price
+        dict_lot["history_bets"].append([id, user_name, start_price, time_stavka])
 
-    with open('lots/' + str(data) + '.json', 'w', encoding='utf-8') as f:
-        json.dump(dict_lot, f, ensure_ascii=False, indent=15)
-    user_name = user_name[0:3] + "***"
-    bot.send_photo(call_id, dict_lot["lot_info"]["photo"], caption=str(start_price) + user_name, reply_markup=stavka1(data))
-    #bot.delete_message(message.chat.id, message.message_id)
-    # bot.send_photo(id_chanel, dict_lot["lot_info"]["photo"], caption=str(start_price) + user_name,
-    #                reply_markup=stavka(data))
-    #bot.send_message(id_chanel, " \nВаша ставка принята\n " + str(start_price) + user_name, reply_markup=stavka(data))
-    #bot.delete_message(id_chanel.message.chanel.id, call_id.message.message_id)
-
+        with open('lots/' + str(data) + '.json', 'w', encoding='utf-8') as f:
+            json.dump(dict_lot, f, ensure_ascii=False, indent=15)
+        winner(data)
+        buf = opisanie(str(data))
+        bot.send_photo(call_id, dict_lot["lot_info"]["photo"], caption= buf, reply_markup=stavka1(data),parse_mode="html")
+    else:
+        winner(str(data))
+        buf = opisanie(str(data))
+        bot.send_photo(call_id, dict_lot["lot_info"]["photo"],
+                       caption= buf,
+                       reply_markup=stavka1(data),parse_mode="html")
 
 #ставка с процентами
 def percent_stavka(mas_st,user_name,call_id,id):
@@ -308,6 +334,7 @@ def percent_stavka(mas_st,user_name,call_id,id):
     f = open('lots/' + str(mas_st[0]) + '.json', 'r', encoding='utf-8')
     dict_lot = json.loads(f.read())
     f.close()
+
     for z in dict_lot:
         for x in dict_lot[z]:
             if x == "actual_price":
@@ -315,7 +342,7 @@ def percent_stavka(mas_st,user_name,call_id,id):
             if x == "start_price":
                 start_price = (dict_lot[z][x])
 
-    actual_price_new=int(start_price*float(mas_st[1])/100)+start_price
+    actual_price_new=int(actual_price*float(mas_st[1])/100)+actual_price
     print(actual_price_new)
     if actual_price_new>actual_price:
         dict_lot["lot_info"]["actual_price"] = actual_price_new
@@ -323,21 +350,22 @@ def percent_stavka(mas_st,user_name,call_id,id):
 
         with open('lots/' + str(mas_st[0]) + '.json', 'w', encoding='utf-8') as f:
             json.dump(dict_lot, f, ensure_ascii=False, indent=15)
-        bot.send_photo(call_id, dict_lot["lot_info"]["photo"], caption=str(actual_price_new) + user_name,
-                       reply_markup=stavka1(mas_st[0]))
-        #bot.send_message(call_id, " Ваша ставка принята\n " + str(actual_price_new) + user_name, reply_markup=stavka1(mas_st[0]))
+        winner(mas_st[0])
+        buf = opisanie(mas_st[0])
+        bot.send_photo(call_id, dict_lot["lot_info"]["photo"],
+                       caption= buf, reply_markup=stavka1(mas_st[0]),parse_mode="html")
+
     else:
         bot.send_message(call_id, " Ваша ставка не принята\n " + str(actual_price) + user_name,
-                         reply_markup=stavka1(mas_st[0]))
-
-
+                         reply_markup=stavka1(mas_st[0]),parse_mode="html")
 
 #ставка с цифрами
-def dinamic_stavka(mas_st,user_name,call_id,id):
+def dinamic_stavka(mas_st,user_name,id_user):
     time_stavka = (int(time.time()))
     actual_price = ""
     f = open('lots/' + str(mas_st[0]) + '.json', 'r', encoding='utf-8')
     dict_lot = json.loads(f.read())
+
     f.close()
     for z in dict_lot:
         for x in dict_lot[z]:
@@ -349,8 +377,141 @@ def dinamic_stavka(mas_st,user_name,call_id,id):
     dict_lot["history_bets"] .append ([id, user_name, actual_price_new,time_stavka])
     with open('lots/' + str(mas_st[0]) + '.json', 'w', encoding='utf-8') as f:
         json.dump(dict_lot, f, ensure_ascii=False, indent=15)
-    user_name = user_name[0:3] + "***"
-    # bot.send_message(call_id, " Ваша ставка принята\n " + str(actual_price_new) + user_name,
-    #                  reply_markup=stavka1(mas_st[0]))
-    bot.send_photo(call_id, dict_lot["lot_info"]["photo"], caption=str(actual_price_new) + user_name,
-                   reply_markup=stavka1(mas_st[0]))
+    winner(mas_st[0])
+    buf = opisanie(str(mas_st[0]))
+    bot.send_photo(id_user, dict_lot["lot_info"]["photo"],
+                   caption=buf, reply_markup=stavka1(mas_st[0]),parse_mode="html")
+
+
+def avtostavka(id,data,call_id,user_name):
+    f = open('lots/' + str(data) + '.json', 'r', encoding='utf-8')
+    dict_lot = json.loads(f.read())
+    f.close()
+    for z in dict_lot:
+        if z=="history_bets":
+            mas_bets=dict_lot[z]
+    print(mas_bets)
+    c=(len(mas_bets)-1)
+    print(mas_bets[c])
+    for i in mas_bets[c]:
+        if id ==i:
+            stavka_new=(mas_bets[c][2])+10
+            print(stavka_new)
+            time_stavka = (int(time.time()))
+            mas_bets.append([id, user_name, stavka_new,time_stavka])
+            dict_lot["history_bets"] = mas_bets
+
+            with open('lots/' + str(data) + '.json', 'w', encoding='utf-8') as f:
+                json.dump(dict_lot, f, ensure_ascii=False, indent=15)
+            user_name = user_name[0:3] + "***"
+            bot.send_message(call_id, " Ваша ставка принята\n " + str(stavka_new) + 'руб ' +user_name,
+                             reply_markup=stavka1(data))
+        else:
+            bot.send_message(call_id, " Ваша ставка и так последняя\n ")
+
+def list_active_lot_for_user(user_id, active_lots, bot):
+    with open('users_statistics.json', encoding='utf-8') as f:
+        all_users_stat = json.load(f)
+        f.close()
+        user_stat_bets = all_users_stat[str(user_id)]['bets']
+        current_lots = dict()
+        for x in user_stat_bets:
+            if str(x['id_lot']) in active_lots.keys():
+                current_lots[str(x['id_lot'])] = active_lots[str(x['id_lot'])]
+        bot.send_message(user_id,"Вот ваши активные лоты:", reply_markup=current_lots_keyboard(current_lots))
+
+def refresh_active_lots():
+    for filename in os.listdir("vocabulary"):
+        with open(os.path.join("vocabulary", filename), 'r', encoding='utf-8') as f:
+            admin = json.load(f)
+            for x in admin["lots"]:
+                active_lots[x['lot_id']] = x['lot_name']
+    print("Общий словарь активных лотов", active_lots)
+
+
+
+#функция которая контролирует победителей и миграцию в файле лота
+def winner(lot_id):
+    with open('lots/' + str(lot_id) + '.json', 'r', encoding='utf-8') as f:
+        data = json.load(f)
+        data_list = data['history_bets']
+        data_winner = data['winner']
+    try:
+        if data_list[-1] != []:
+            data_winner.update({"gold": {"id_user": data_list[-1][0]}})
+            data_winner["gold"].update({"name_user": data_list[-1][1]})
+            data_winner["gold"].update({"price": data_list[-1][2]})
+    except IndexError:
+        if "gold" in data_winner:
+            del data_winner["gold"]
+        else:
+            pass
+    try:
+        if data_list[-2] != []:
+            data_winner.update({"silver": { "id_user": data_list[-2][0]}})
+            data_winner["silver"].update({"name_user": data_list[-2][1]})
+            data_winner["silver"].update({"price": data_list[-2][2]})
+    except IndexError:
+        if "silver" in data_winner:
+            del data_winner["silver"]
+        else:
+            pass
+    try:
+        if data_list[-3] != []:
+            data_winner.update({"bronze": { "id_user": data_list[-3][0]}})
+            data_winner["bronze"].update({"name_user": data_list[-3][1]})
+            data_winner["bronze"].update({"price": data_list[-3][2]})
+    except IndexError:
+        if "bronze" in data_winner:
+            del data_winner["bronze"]
+        else:
+            pass
+
+    with open('lots/' + str(lot_id) + '.json', 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=15)
+    f.close()
+
+#функция удаляет ненужные лоты из файла админа
+def del_lot_in_admin(id_user):
+    try:
+        with open('vocabulary/' + str(id_user) + '.json', 'r', encoding='utf-8') as f:
+            data = json.load(f)
+            data1 = data['lots']
+            for x in data1:
+                id_lot = x["lot_id"]
+                try:
+                    with open('lots/' + str(id_lot) + '.json', encoding='utf-8') as g:
+                        g.close()
+                        print('yes')
+                except FileNotFoundError:
+                    for y in range(len(data1)):
+                        if data1[y]['lot_id'] == id_lot:
+                            del data1[y]
+                            break
+                    with open('vocabulary/' + str(id_user) + '.json', 'w', encoding='utf-8') as f:
+                        json.dump(data, f, ensure_ascii=False, indent=4, )
+                    f.close()
+    except:
+        pass
+
+def opisanie (lot_id):
+    with open('lots/' + str(lot_id) + '.json', 'r', encoding='utf-8') as f:
+        data = json.load(f)
+        lot = data['lot_info']
+        data_winner = data['winner']
+    buf = ''
+    buf += '<b>Название: </b>' + lot['lot_name'] + '\n'
+    buf += '<b>Описание:  </b>' + lot['description'] + '\n'
+    buf += '<b>Город:  </b>' + lot['city'] + '\n'
+    buf += '<b>Условия доставки:  </b>' + lot['delivery terms'] + '\n'
+    buf += '<b>Продавец:  </b>' + '@'+lot['user_name_admin'] + '\n\n'
+    if "gold" in data_winner:
+        buf += '🥇' + str(data_winner['gold']['price']) +' руб ' + ' -  ' + data_winner['gold']['name_user'][0:3] + "***" + '\n'
+    if "silver" in data_winner:
+        buf += '🥈' + str(data_winner['silver']['price']) +' руб ' + ' -  '  + data_winner['silver']['name_user'][0:3] + "***" + '\n'
+    if "bronze" in data_winner:
+        buf += '🥉' + str(data_winner['bronze']['price']) +' руб ' + ' -  '  + data_winner['bronze']['name_user'][0:3] + "***" + '\n'
+    with open('lots/' + str(lot_id) + '.json', 'r', encoding='utf-8') as f:
+        lot = json.load(f)
+        f.close()
+    return buf

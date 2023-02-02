@@ -1,8 +1,10 @@
 import time
 import json
-from variables import bot
+from variables import bot,id_chanel
 from datetime import datetime, timedelta
 from keyboards import stavka1
+
+
 
 def convert_sec(times):
     sec_to_min=60
@@ -17,16 +19,17 @@ def convert_sec(times):
     sec=times
     t=("\n%d дня, %d часа, %d минуты, %d секунды" % (days, hour, min, sec))
     return t
-def time_lot(call_id,data):
-    print(data)
-    f = open('lots/'+ str(data) +'.json', 'r', encoding='utf-8')
+def time_lot(call_id,lot_id,):
+    print(call_id)
+    print(lot_id)
+    f = open('lots/'+ str(lot_id) +'.json', 'r', encoding='utf-8')
 
     dict_lot = json.loads(f.read())
     print(dict_lot)
     f.close()
     time_today=(int(time.time()))
     time_break=""
-    a=60*60*24*5
+    a=60
     for z in dict_lot:
         for x in dict_lot[z]:
             if x == "time_create":
@@ -38,88 +41,75 @@ def time_lot(call_id,data):
     if times > 0:
         bot.answer_callback_query(call_id, "аукцион закончиться через \n "+convert_sec(times), show_alert=False)
     else:
+
         bot.answer_callback_query(call_id, "Аукцион уже закончен, участие невозможно,\n посмотрите другие лоты" , show_alert=False)
 
 def information(call_id):
     bot.answer_callback_query(call_id, "Ставку можно отменить в течении 1 минуты, нажав на кнопку Отмена."
                                        "Выигранный лот необходимо выкупить в течении 5 дней, в противном случае БАН на 5 дней!!!", show_alert=True)
 
-def stavka_back(call_id,data):
-    a = datetime.now()
-    f = open('lots/' + str(data) + '.json', 'r', encoding='utf-8')
+def time_is_over_lot(lot_id,id_chanel,user_id):
+    f = open('lots/' + str(lot_id) + '.json', 'r', encoding='utf-8')
     dict_lot = json.loads(f.read())
+    time_lot_info = dict_lot['service_info']['time_create']
+    channel_message_id = dict_lot["service_info"]["channel_message_id"]
+    winner_finish = dict_lot['service_info']['winner_dict']
+    data_winner = dict_lot['winner']
+    lot_info = dict_lot['lot_info']
     f.close()
-    for z in dict_lot:
-        if z=="history_bets":
-            mas_bets=dict_lot[z]
+    time_today = (int(time.time()))
 
-#ставка при первом нажатии участвовать
-def stavka_lot(call_id,user_name,id,data):
-    time_stavka = datetime.now() + timedelta(minutes=1)
-    print(time_stavka)
-    start_price = ""
-    f = open('lots/' + str(data) + '.json', 'r', encoding='utf-8')
-    dict_lot = json.loads(f.read())
-    f.close()
-    for z in dict_lot:
-        for x in dict_lot[z]:
-            if x == "start_price":
-                start_price = int(dict_lot[z][x])
-    dict_lot["lot_info"]["actual_price"] = start_price
-    dict_lot["history_bets"].append([id,user_name,start_price])
+    a = 60*2
+    time_break = int(time_lot_info) + a
+    while True:
+        try:
+            print(time.time())
+            time.sleep(5)
+            if time_today > time_break:
+                try:
+                    if "gold" in data_winner:
+                        winner_finish['user_name'] = data_winner['gold']['name_user']
+                        winner_finish['price_final'] = data_winner['gold']['price']
+                    with open('lots/' + str(lot_id) + '.json','w', encoding='utf-8') as f:
+                        json.dump(dict_lot,f,ensure_ascii=False,indent=15,)
+                    buf = ''
+                    buf += '<b>Название: </b>' + lot_info['lot_name'] + '\n'
+                    buf += '<b>Описание:  </b>' + lot_info['description'] + '\n'
+                    buf += '<b>Город:  </b>' + lot_info['city'] + '\n'
+                    buf += '<b>Условия доставки:  </b>' + lot_info['delivery terms'] + '\n'
+                    buf += '<b>Продавец:  </b>' + '@' + lot_info['user_name_admin'] + '\n\n'
+                    if 'user_name' in winner_finish:
+                        buf += '<b>       Победитель:  </b>' + ' 🥇'+ winner_finish['user_name'][0:3] + "***" + '\n'
+                        buf += '<b>💰Продано за :       </b>' +str(winner_finish['price_final']) + 'руб'
+                        bot.edit_message_caption(caption=buf, chat_id=id_chanel, message_id=channel_message_id, parse_mode="html")
+                except TypeError:
+                    buf = ''
+                    buf += '<b>Название: </b>' + lot_info['lot_name'] + '\n'
+                    buf += '<b>Описание:  </b>' + lot_info['description'] + '\n'
+                    buf += '<b>Город:  </b>' + lot_info['city'] + '\n'
+                    buf += '<b>Условия доставки:  </b>' + lot_info['delivery terms'] + '\n'
+                    buf += '<b>Продавец:  </b>' + '@' + lot_info['user_name_admin'] + '\n\n'
+                    buf += '🏁 аукцион закончен.Победителей нет..'
+                    bot.edit_message_caption(caption=buf, chat_id=id_chanel, message_id=channel_message_id, parse_mode="html")
+                with open('vocabulary/' + str(user_id) + '.json', 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+                    active_lots = data['lots']
+                    arhive_lots = data['arhive']
+                    arhive_lots.append({"lot_id": str(lot_id), "lot_name": lot_info['lot_name']})
+                    for x in range(len(active_lots)):
+                        if active_lots[x]['lot_id'] == lot_id:
+                            del active_lots[x]
+                            break
+                with open('vocabulary/' + str(user_id) + '.json', 'w', encoding='utf-8') as f:
+                    json.dump(data, f, ensure_ascii=False, indent=4, )
 
-    with open('lots/' + str(data) + '.json', 'w', encoding='utf-8') as f:
-        json.dump(dict_lot, f, ensure_ascii=False, indent=15)
-    user_name = user_name[0:3] + "***"
-    bot.send_message(call_id, " Ваша ставка принята\n " + str(start_price) + user_name, reply_markup=stavka1(data))
-
-#ставка с процентами
-def percent_stavka(mas_st,user_name,call_id,id):
-    actual_price = ""
-    start_price = ""
-    f = open('lots/' + str(mas_st[0]) + '.json', 'r', encoding='utf-8')
-    dict_lot = json.loads(f.read())
-    f.close()
-    for z in dict_lot:
-        for x in dict_lot[z]:
-            if x == "actual_price":
-                actual_price = (dict_lot[z][x])
-            if x == "start_price":
-                start_price = (dict_lot[z][x])
-
-    actual_price_new=int(start_price*float(mas_st[1])/100)+start_price
-    print(actual_price_new)
-    if actual_price_new>actual_price:
-        dict_lot["lot_info"]["actual_price"] = actual_price_new
-        dict_lot["history_bets"] .append([id, user_name, actual_price_new])
+            else:
+                pass
+        except:
+            pass
 
 
-        with open('lots/' + str(mas_st[0]) + '.json', 'w', encoding='utf-8') as f:
-            json.dump(dict_lot, f, ensure_ascii=False, indent=15)
-        user_name = user_name[0:3] + "***"
-        bot.send_message(call_id, " Ваша ставка принята\n " + str(actual_price_new) + user_name, reply_markup=stavka1(mas_st[0]))
-    else:
-        bot.send_message(call_id, " Ваша ставка не принята\n " + str(actual_price) + user_name,
-                         reply_markup=stavka1(mas_st[0]))
 
-#ставка с цифрами
-def dinamic_stavka(mas_st,user_name,call_id,id):
-    #print(data_st)
-    actual_price = ""
-    f = open('lots/' + str(mas_st[0]) + '.json', 'r', encoding='utf-8')
-    dict_lot = json.loads(f.read())
-    f.close()
-    for z in dict_lot:
-        for x in dict_lot[z]:
-            if x == "actual_price":
-                actual_price = (dict_lot[z][x])
-    actual_price_new = int(actual_price + float(mas_st[1]))
-    print(actual_price)
-    dict_lot["lot_info"]["actual_price"] = actual_price_new
-    dict_lot["history_bets"] .append ([id, user_name, actual_price_new])
-    with open('lots/' + str(mas_st[0]) + '.json', 'w', encoding='utf-8') as f:
-        json.dump(dict_lot, f, ensure_ascii=False, indent=15)
-    user_name = user_name[0:3] + "***"
-    bot.send_message(call_id, " Ваша ставка принята\n " + str(actual_price_new) + user_name,
-                     reply_markup=stavka1(mas_st[0]))
+
+
 

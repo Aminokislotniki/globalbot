@@ -114,8 +114,6 @@ def stavka1(data):
                 type_stavka=int(dict_lot[z][x])
             if x== "start_price":
                 start_price=int(dict_lot[z][x])
-    print(min_stavka)
-
     if type_stavka != 1:
         stavka_keyboard = InlineKeyboardMarkup()
         button_1 = (InlineKeyboardButton("+" + str(min_stavka), callback_data="la" + str(data) + '!' + str(min_stavka)))
@@ -140,16 +138,16 @@ def stavka1(data):
 
 
     else:
+        actual_price = ""
         list1 = []
-        x = 2.5
+        i=2.5
         while len(list1) < 6:
-            if start_price * x // 100 > min_stavka:
-                list1.append(x)
-            x += 2.5
+            if int(start_price) * float(i) / 100 > int(min_stavka):
+                list1.append(i)
+            i += 2.5
         print(list1)
         stavka_keyboard = InlineKeyboardMarkup()
-        button_list = [InlineKeyboardButton(text=str(x) + "%", callback_data="lf" + str(data) + "!" + str(x)) for x in
-                       list1]
+        button_list = [InlineKeyboardButton(text="+ "+str(x)+" %", callback_data="lf"+str(data)+"!"+str(x)) for x in list1]
         button_7 = (InlineKeyboardButton("Автоставка", callback_data="lh" + str(data)))
         button_8 = (InlineKeyboardButton("Отменить", callback_data="lb" + str(data)))
         button_9 = (InlineKeyboardButton("Время", callback_data="lt" + str(data)))
@@ -198,6 +196,14 @@ def edit_card_keyboard(id_lot, type_lot):
     keyboard.add(save_button)
     if type_lot == "n":
         keyboard.add(button_public_in_channel)
+    keyboard.add(exitbutton)
+    return keyboard
+
+def current_lots_keyboard(current_lots_dict):
+    keyboard = InlineKeyboardMarkup(row_width=2)
+    button_list = [InlineKeyboardButton(text=value, callback_data="sc*" + key) for key,value in current_lots_dict.items()]
+    exitbutton = InlineKeyboardButton(text="Выход", callback_data="sq")
+    keyboard.add(*button_list)
     keyboard.add(exitbutton)
     return keyboard
 
