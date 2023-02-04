@@ -19,7 +19,7 @@ def fs_serj(st):
     return(st[0:2])
 
 #функция которая обновляет победителей в канале
-def winner_change_chanel(lot_id, id_chanel):
+def winner_change_chanel(lot_id, id_chanel,id_user):
     with open('lots/' + str(lot_id) + '.json', 'r', encoding='utf-8') as f:
         data = json.load(f)
         lot = data['lot_info']
@@ -201,34 +201,36 @@ def post_to_channel_by_id(message,lot_id, bot,id_user):
        msg = bot.send_message("Вы можете либо выйти через /stop\nЛибо подтвердить отправку через /continue")
        bot.register_next_step_handler(msg, post_to_channel_by_id, lot_id, bot)
 
-def stavka_back(call_id,data):
-    a = datetime.now()
+def stavka_back(call_id,data,id_user):
     f = open('lots/' + str(data) + '.json', 'r', encoding='utf-8')
     dict_lot = json.loads(f.read())
+    list_lot = dict_lot['history_bets']
+    time_lot = dict_lot['service_info']['time_create']
+    time_today = int(time.time())
     f.close()
-    for z in dict_lot:
-        if z=="history_bets":
-            mas_bets=dict_lot[z]
-    print(mas_bets)
-    for x in mas_bets:
-        t = int(time.time())
-        for i in range(len(mas_bets) - 1, -1, -1):
-            if t - x[3] < 60:
-                print(x)
-                del mas_bets[i]
-            # if (int(time.time())-x[3])<300:
+    winner(str(data))
+    buf = opisanie(str(data))
+    bot.send_photo(id_user, dict_lot["lot_info"]["photo"],
+                   caption=buf, reply_markup=stavka1(data), parse_mode="html")
+    for x in list_lot:
+        if x[3]+60 > time_today and x[0] == id_user:
+            print("no delete")
+            if len(list_lot) > 1:
+                del list_lot[-1]
+            else:
+                del list_lot[0]
 
-            # bot.send_photo(call_id, dict_lot["lot_info"]["photo"], caption=dict_lot["lot_info"]["lot_name"]+"\n"+str(dict_lot["lot_info"]["start_price"])+"\n",
-            #                 reply_markup=stavka1(data))
-            # bot.delete_message(call.message.chat.id, call.message.message_id)
+            with open('lots/' + str(data) + '.json', 'w', encoding='utf-8') as f:
+                json.dump(dict_lot, f, ensure_ascii=False, indent=15, )
             winner(str(data))
-
+            buf = opisanie(str(data))
+            winner_change_chanel(data, id_chanel,id_user)
+            bot.send_photo(id_user, dict_lot["lot_info"]["photo"],
+                           caption=buf, reply_markup=stavka1(data), parse_mode="html")
+            winner(str(data))
             bot.answer_callback_query(call_id, "Ставка отменена успешно", show_alert=False)
-
-            # for i in range(len(mas_bets)-1,-1,-1):
-            #     print(mas_bets[i])
-            #     del mas_bets[i]
-        else:
+        if list_lot[-1][3]+60 < time_today and x[0] == id_user:
+            winner(str(data))
             bot.answer_callback_query(call_id, "Ставкy отменить невозможно", show_alert=False)
 
 
@@ -313,8 +315,8 @@ def stavka_lot(call_id,user_name,id,data):
     dict_lot = json.loads(f.read())
     f.close()
     for z in dict_lot:
-        if z=="history_bets":
-            mas_bets=dict_lot[z]
+        if z == "history_bets":
+            mas_bets = dict_lot[z]
         for x in dict_lot[z]:
             if x == "start_price":
                 start_price = int(dict_lot[z][x])
@@ -336,8 +338,8 @@ def stavka_lot(call_id,user_name,id,data):
 
 #ставка с процентами
 def percent_stavka(mas_st,user_name,call_id,id):
+    print(f'это процент ставка  {mas_st,user_name,call_id,id}')
     time_stavka = (int(time.time()))
-    user_name = user_name[0:3] + "***"
     actual_price = ""
     start_price = ""
     f = open('lots/' + str(mas_st[0]) + '.json', 'r', encoding='utf-8')
@@ -359,7 +361,6 @@ def percent_stavka(mas_st,user_name,call_id,id):
 
         with open('lots/' + str(mas_st[0]) + '.json', 'w', encoding='utf-8') as f:
             json.dump(dict_lot, f, ensure_ascii=False, indent=15)
-        winner(mas_st[0])
         buf = opisanie(mas_st[0])
         bot.send_photo(call_id, dict_lot["lot_info"]["photo"],
                        caption= buf, reply_markup=stavka1(mas_st[0]),parse_mode="html")
@@ -368,14 +369,17 @@ def percent_stavka(mas_st,user_name,call_id,id):
         bot.send_message(call_id, " Ваша ставка не принята\n " + str(actual_price) + user_name,
                          reply_markup=stavka1(mas_st[0]),parse_mode="html")
 
+
 #ставка с цифрами
 def dinamic_stavka(mas_st,user_name,id_user):
     time_stavka = (int(time.time()))
     actual_price = ""
     f = open('lots/' + str(mas_st[0]) + '.json', 'r', encoding='utf-8')
     dict_lot = json.loads(f.read())
-
     f.close()
+    buf = opisanie(str(mas_st[0]))
+    bot.send_photo(id_user, dict_lot["lot_info"]["photo"],
+                   caption=buf, reply_markup=stavka1(mas_st[0]), parse_mode="html")
     for z in dict_lot:
         for x in dict_lot[z]:
             if x == "actual_price":

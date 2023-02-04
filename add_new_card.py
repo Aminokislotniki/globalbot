@@ -35,7 +35,7 @@ def  time_is_over_lot(lot_id,id_chanel,user_id,id,call_id):
     f.close()
     time_today = (int(time.time()))
     time_break = ""
-    a = 60*60
+    a = 60
     print("время конца"+str(time_break))
     print("время сейчас"+str(time_today))
     for z in dict_lot:

@@ -12,7 +12,7 @@ from services_func import fs_serj, dt_serj, check_is_admin, check_is_super_admin
 from lot_add import star_new_lot,dict_lot
 from admin_add import create_new_admin_json
 from post_lot import post_lots
-from add_new_card import time_lot,information,time_is_over_lot
+from add_new_card import information,time_is_over_lot
 from variables import active_lots
 
 @bot.message_handler(commands=['start'])
@@ -39,7 +39,8 @@ def statistics(message):
         buf = opisanie(id_ll)
         bot.send_message(message.chat.id,
                          "Привет ,я бот аукционов Я помогу вам следить за выбранными лотами ,и регулировать ход аукциона.Удачных торгов 🤝 ")
-        bot.send_photo(message.chat.id, photo=photo, caption=buf, reply_markup=stavka(id_ll),parse_mode="html")
+        a= bot.send_photo(message.chat.id, photo=photo, caption=buf, reply_markup=stavka(id_ll),parse_mode="html").id
+        print(" id сообщения " + str(a))
     except:
         print("Что-то пошло не так в команде /start")
 
@@ -281,17 +282,18 @@ def call(call):
         bot.delete_message(call.message.chat.id, call.message.message_id - 1)
         bot.delete_message(call.message.chat.id, call.message.message_id)
         winner(data)
-        winner_change_chanel(data, id_chanel)
+        winner_change_chanel(data, id_chanel,id_user)
 
 
 
     if flag == "lf":
+
         mas_st=data.split('!')
         print("flag lf", mas_st)
         percent_stavka(mas_st,user_name,id,id)
-        bot.delete_message(call.message.chat.id, call.message.message_id)
+
         winner(mas_st[0])
-        winner_change_chanel(mas_st[0], id_chanel)
+        winner_change_chanel(mas_st[0], id_chanel,id_user)
 
     # время
     if flag == "lt":
@@ -300,9 +302,10 @@ def call(call):
         time_is_over_lot(data, id_chanel, id_user, id,call.id)
         print("id"+str(id))
 
-    # автоставка
+
     if flag == "li":
         information(call.id)
+
 
     if flag == "la": # клавиатура первого нажатия на участвовать. ставка равна начальной стоимости
         mas_st = data.split('!')
@@ -311,15 +314,17 @@ def call(call):
         winner(data)
         dinamic_stavka(mas_st, user_name, id_user)
         winner(mas_st[0])
-        winner_change_chanel(mas_st[0], id_chanel)
+        winner_change_chanel(mas_st[0], id_chanel,id_user)
 
     # для отмены ставки
     if flag == "lb":
-        print("qaewsxrctfvygbuh" +data)
+        print(f'{call.id} это дата {data}' )
         winner(data)
-        stavka_back(call.id, data)
-        winner(data)
-        winner_change_chanel(data, id_chanel)
+
+        stavka_back(call.id, data,id_user)
+
+
+
 
     if flag == "lo":
         bot.answer_callback_query(callback_query_id=call.id)

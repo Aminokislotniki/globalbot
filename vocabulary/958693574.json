@@ -4,10 +4,29 @@
         "user_name": "@tima_minski"
     },
     "lots": [
-
         {
-            "lot_id": "125",
-            "lot_name": "Fdgfhjk"
+            "lot_id": "131",
+            "lot_name": "Asxdv"
+        },
+        {
+            "lot_id": "132",
+            "lot_name": "Efvhbwepvjknpf"
+        },
+        {
+            "lot_id": "133",
+            "lot_name": "Bmw"
+        },
+        {
+            "lot_id": "134",
+            "lot_name": "Ghj"
+        },
+        {
+            "lot_id": "135",
+            "lot_name": "Sfghdfgh"
+        },
+        {
+            "lot_id": "136",
+            "lot_name": "Sdfghf"
         }
     ],
     "not_posted_lots": [
@@ -68,6 +87,22 @@
         {
             "lot_id": "126",
             "lot_name": "Vghjk"
+        },
+        {
+            "lot_id": "128",
+            "lot_name": "Калом"
+        },
+        {
+            "lot_id": "129",
+            "lot_name": "Wfgh"
+        },
+        {
+            "lot_id": "130",
+            "lot_name": "Scvbnbgvfd"
+        },
+        {
+            "lot_id": "137",
+            "lot_name": "Hello world"
         }
     ]
 }
